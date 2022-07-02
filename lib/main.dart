@@ -2,6 +2,7 @@ import 'package:exp_app/pages/add_entries.dart';
 import 'package:exp_app/pages/home_page.dart';
 import 'package:exp_app/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(
@@ -19,6 +20,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
+      localizationsDelegates: const  [
+        GlobalMaterialLocalizations.delegate
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('es')
+      ],
       theme: ThemeData.dark().copyWith(
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.grey[900]
@@ -30,6 +38,9 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.green[800],
           foregroundColor: Colors.white
         ),
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.green
+        ),
         scaffoldBackgroundColor: Colors.grey[900],
         primaryColorDark: Colors.grey[850],
 
@@ -37,7 +48,7 @@ class MyApp extends StatelessWidget {
       initialRoute: 'home',
       routes:{
         'home': (_)=> const HomePage(),
-        'addEntries': (_)=> const AddEntries(),
+        
 
       } ,
     );
