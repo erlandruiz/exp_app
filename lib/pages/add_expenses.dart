@@ -4,6 +4,7 @@ import 'package:exp_app/widgets/add_expenses_wt/bs_category.dart';
 import 'package:exp_app/widgets/add_expenses_wt/bs_num_keyboard.dart';
 import 'package:exp_app/widgets/add_expenses_wt/comment_box.dart';
 import 'package:exp_app/widgets/add_expenses_wt/date_picker.dart';
+import 'package:exp_app/widgets/add_expenses_wt/save_button.dart';
 import 'package:flutter/material.dart';
 
 class AddExpenses extends StatelessWidget {
@@ -34,11 +35,8 @@ class AddExpenses extends StatelessWidget {
                     CommentBox(cModel: cModel,),
                      Expanded(
                       child: Center(
-                        child: GestureDetector(
-                          onTap: (){
-                           print (cModel.amount);
-                          },
-                          child: const Text('Botón Done')))
+                        child: SaveButton(cModel: cModel,)
+                        )
                       
                       ),
                   ],

@@ -1,7 +1,13 @@
 import 'package:exp_app/models/combined_model.dart';
+import 'package:exp_app/models/features_model.dart';
+import 'package:exp_app/providers/expenses_provider.dart';
+import 'package:exp_app/utils/constants.dart';
 import 'package:exp_app/utils/utils.dart';
+import 'package:exp_app/widgets/add_expenses_wt/admin_category.dart';
 import 'package:exp_app/widgets/add_expenses_wt/category_list.dart';
+import 'package:exp_app/widgets/add_expenses_wt/create_category.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BSCategory extends StatefulWidget {
   final CombinedModel cModel;
@@ -12,15 +18,30 @@ class BSCategory extends StatefulWidget {
 }
 
 class _BSCategoryState extends State<BSCategory> {
+   var catList = CategoryList().catList;
+   final FeaturesModel fModel = FeaturesModel();
+   @override
+  void initState() {
+    var exProvider = context.read<ExpensesProvider>();
+    if(exProvider.fList.isEmpty){
+      for (FeaturesModel e in catList){
+        exProvider.addNewFeature(e);
+
+      }
+    }
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+    final featureList = context.watch<ExpensesProvider>().fList;
     bool hasData = false;
     if (widget.cModel.category != 'Selecciona Categoría'){
       hasData = true;
     }
     return GestureDetector(
       onTap: (){
-        _categorySelected();
+        _categorySelected(featureList);
 
       },
       child: Padding(
@@ -52,24 +73,24 @@ class _BSCategoryState extends State<BSCategory> {
       ),
     );
   }
-  _categorySelected(){
-    var catList = CategoryList().catList;
-    void _itemSelectec(String category, String color){
+  _categorySelected(List<FeaturesModel> fList){
+    void _itemSelectec(String category, String color , int link){
       setState(() {
+        widget.cModel.link = link;
         widget.cModel.category = category;
         widget.cModel.color = color;
         Navigator.pop(context);
       });
     }
 
-    var _widget = [
+    var _widgets = [
       ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: catList.length,
+        itemCount: fList.length,
         itemBuilder: (_,i){
           
-          var item = catList[i];
+          var item = fList[i];
           return  ListTile(
             leading:  Icon(
               item.icon.toIcon(),
@@ -87,7 +108,8 @@ class _BSCategoryState extends State<BSCategory> {
             onTap: (){
               _itemSelectec(
                 item.category, 
-                item.color);
+                item.color,
+                item.id!);
 
             },
 
@@ -103,6 +125,7 @@ class _BSCategoryState extends State<BSCategory> {
         trailing:  const Icon(Icons.arrow_forward_ios, size: 20.0),
         onTap: (){
           Navigator.pop(context);
+          _createNewCategory();
         }
       ),
       ListTile(
@@ -111,27 +134,52 @@ class _BSCategoryState extends State<BSCategory> {
         trailing:  const Icon(Icons.arrow_forward_ios, size: 20.0),
         onTap: (){
           Navigator.pop(context);
+          _adminCategory();
         },
       ),
 
     ];
     showModalBottomSheet(
-      shape: const RoundedRectangleBorder(
-        borderRadius:  BorderRadius.vertical(
-          top: Radius.circular(25.0)
-        )
-      ),
+      shape: Constants.bottomSheet(),
       isScrollControlled: true,
       context: context, 
       builder: (context){
         return SizedBox(
           height: MediaQuery.of(context).size.height/1.5,
           child: ListView(
-            children: _widget,
+            children: _widgets,
             
           ),
         );
       });
 
   }
+  _createNewCategory(){
+    var features = FeaturesModel(
+      id: fModel.id,
+      category: fModel.category,
+      color: fModel.color,
+      icon: fModel.icon
+    );
+    showModalBottomSheet(
+      shape: Constants.bottomSheet(),
+      isDismissible: false,
+      isScrollControlled: true,
+      
+      context: context, 
+      builder: (context)=>  CreateCategory(fModel: features,)
+      );
+  }
+
+  _adminCategory(){
+    showModalBottomSheet(
+      shape: Constants.bottomSheet(),
+      isDismissible: false,
+      // isScrollControlled: true,
+      
+      context: context, 
+      builder: (context)=>  const AdminCategory()
+      );
+  }
+  
 }
